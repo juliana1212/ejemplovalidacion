@@ -4,19 +4,27 @@ pipeline {
     environment {
         SONAR_PROJECT_KEY = 'crud-clientes'
         SONAR_PROJECT_NAME = 'CRUD Clientes'
+        VENV_DIR = '.venv'
     }
 
     stages {
         stage('Install Dependencies') {
             steps {
-                sh 'python3 -m pip install --upgrade pip'
-                sh 'python3 -m pip install -r requirements.txt'
+                sh '''
+                python3 -m venv $VENV_DIR
+                . $VENV_DIR/bin/activate
+                python -m pip install --upgrade pip
+                pip install -r requirements.txt
+                '''
             }
         }
 
         stage('Run Tests with Coverage') {
             steps {
-                sh 'python3 -m pytest'
+                sh '''
+                . $VENV_DIR/bin/activate
+                python -m pytest
+                '''
             }
         }
 
@@ -26,6 +34,7 @@ pipeline {
                     def scannerHome = tool name: 'SonarScanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
                     withSonarQubeEnv('SonarQube') {
                         sh """
+                        . ${VENV_DIR}/bin/activate
                         ${scannerHome}/bin/sonar-scanner \
                           -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
                           -Dsonar.projectName="${SONAR_PROJECT_NAME}" \
