@@ -28,20 +28,25 @@ pipeline {
             }
         }
 
-        stage('SonarQube Analysis') {
-            steps {
-                withSonarQubeEnv('SonarQube') {
-                    sh '''
-                    . .venv/bin/activate
-                    pip install sonar-scanner-cli
-                    sonar-scanner \
-                      -Dsonar.projectKey=crud-clientes-devops \
-                      -Dsonar.sources=src \
-                      -Dsonar.python.coverage.reportPaths=coverage.xml
-                    '''
-                }
-            }
+stage('SonarQube Analysis') {
+    steps {
+        withSonarQubeEnv('SonarQube') {
+            sh '''
+            . $VENV_DIR/bin/activate
+
+            curl -sSLo sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip
+            apt-get update && apt-get install -y unzip
+            unzip sonar-scanner.zip
+            export PATH=$PATH:$(pwd)/sonar-scanner-5.0.1.3006-linux/bin
+
+            sonar-scanner \
+              -Dsonar.projectKey=crud-clientes-devops \
+              -Dsonar.sources=src \
+              -Dsonar.python.coverage.reportPaths=coverage.xml
+            '''
         }
+    }
+}
         
 
         stage('Quality Gate') {
