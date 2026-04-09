@@ -35,8 +35,9 @@ stage('SonarQube Analysis') {
             . $VENV_DIR/bin/activate
 
             curl -sSLo sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip
-            apt-get update && apt-get install -y unzip
-            unzip sonar-scanner.zip
+
+            unzip -o sonar-scanner.zip
+
             export PATH=$PATH:$(pwd)/sonar-scanner-5.0.1.3006-linux/bin
 
             sonar-scanner \
@@ -46,8 +47,7 @@ stage('SonarQube Analysis') {
             '''
         }
     }
-}
-        
+} 
 
         stage('Quality Gate') {
             steps {
