@@ -30,23 +30,18 @@ pipeline {
 
         stage('SonarQube Analysis') {
             steps {
-                script {
-                    def scannerHome = tool name: 'SonarScanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
-                    withSonarQubeEnv('SonarQube') {
-                        sh """
-                        . ${VENV_DIR}/bin/activate
-                        ${scannerHome}/bin/sonar-scanner \
-                          -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
-                          -Dsonar.projectName="${SONAR_PROJECT_NAME}" \
-                          -Dsonar.sources=src \
-                          -Dsonar.tests=tests \
-                          -Dsonar.python.version=3.13 \
-                          -Dsonar.python.coverage.reportPaths=coverage.xml \
-                          -Dsonar.sourceEncoding=UTF-8
-                        """
-                    }
+                withSonarQubeEnv('SonarQube') {
+                    sh '''
+                    . .venv/bin/activate
+                    pip install sonar-scanner-cli
+                    sonar-scanner \
+                      -Dsonar.projectKey=crud-clientes-devops \
+                      -Dsonar.sources=src \
+                      -Dsonar.python.coverage.reportPaths=coverage.xml
+                    '''
                 }
             }
+        }
         }
 
         stage('Quality Gate') {
