@@ -55,23 +55,6 @@ pipeline {
                 }
             }
         }
-
-        stage('Build Docker Image') {
-            steps {
-                sh '''
-                docker build -t crud-clientes-api .
-                '''
-            }
-        }
-
-        stage('Deploy API') {
-            steps {
-                sh '''
-                docker rm -f crud-clientes-api-container || true
-                docker run -d --name crud-clientes-api-container -p 8000:8000 crud-clientes-api
-                '''
-            }
-        }
     }
 
     post {
