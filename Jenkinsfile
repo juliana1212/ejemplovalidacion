@@ -23,7 +23,7 @@ pipeline {
             steps {
                 sh '''
                 . $VENV_DIR/bin/activate
-                python -m pytest
+                pytest --cov=src --cov-report=xml
                 '''
             }
         }
